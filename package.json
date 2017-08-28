@@ -17,7 +17,14 @@
     "babel",
     "es5"
   ],
-  "author": "Greg Linklater",
+  "author": "MIT Connection Science",
+  "contributors": [
+    {
+      "name": "Greg Linklater",
+      "email": "greg@gryphus.io",
+      "url": "https://github.com/EternalDeiwos"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/EternalDeiwos/es5-safe-map/issues"
