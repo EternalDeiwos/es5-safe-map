@@ -87,3 +87,8 @@ class Map {
     return true
   }
 }
+
+/**
+ * Exports
+ */
+module.exports = Map
