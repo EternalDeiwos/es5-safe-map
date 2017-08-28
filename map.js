@@ -40,16 +40,24 @@ class Map {
   set (key, val) {
     let item = this.items[key]
 
+    // Exists
     if (item) {
       item.value = val
+
+    // New Entry
     } else {
       item = new Entry(key, val)
       item[OLDER] = this.head
+
+      if (this.head) {
+        this.head[NEWER] = item
+      }
+
       this.head = item
       this.items[key] = item
+      this.length++
     }
 
-    this.length++
     return true
   }
 
@@ -59,10 +67,19 @@ class Map {
     if (item) {
       let older = item[OLDER]
       let newer = item[NEWER]
-      older[NEWER] = newer
-      newer[OLDER] = older
+
+      if (older) {
+        older[NEWER] = newer
+      }
+
+      if (newer) {
+        newer[OLDER] = older
+      }
+
       item[OLDER] = this.head
       this.head = item
+
+    // Not found
     } else {
       return false
     }
@@ -76,14 +93,23 @@ class Map {
     if (item) {
       let older = item[OLDER]
       let newer = item[NEWER]
-      older[NEWER] = newer
-      newer[OLDER] = older
+
+      if (older) {
+        older[NEWER] = newer
+      }
+
+      if (newer) {
+        newer[OLDER] = older
+      }
+
       delete this.items[key]
+      this.length--
+
+    // Not found
     } else {
       return false
     }
 
-    this.length--
     return true
   }
 }
