@@ -1,0 +1,33 @@
+{
+  "name": "es5-safe-map",
+  "version": "0.0.0",
+  "description": "A babel-safe map implementation for ES5",
+  "main": "map.js",
+  "scripts": {
+    "test": "nyc _mocha test",
+    "jsdoc": "jsdoc -c jsdoc.json -r",
+    "coverage": "nyc --reporter=lcov _mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EternalDeiwos/es5-safe-map.git"
+  },
+  "keywords": [
+    "Map",
+    "babel",
+    "es5"
+  ],
+  "author": "Greg Linklater",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EternalDeiwos/es5-safe-map/issues"
+  },
+  "homepage": "https://github.com/EternalDeiwos/es5-safe-map#readme",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "codecov": "^2.3.0",
+    "jsdoc": "^3.5.4",
+    "mocha": "^3.5.0",
+    "nyc": "^11.1.0"
+  }
+}
