@@ -5,6 +5,10 @@
  */
 const NEWER = Symbol('newer')
 const OLDER = Symbol('older')
+const LENGTH = Symbol('length')
+const HEAD = Symbol('head')
+const ITEMS = Symbol('items')
+const MAP_ENTRIES = Symbol('map_entries')
 
 /**
  * Entry
@@ -18,6 +22,14 @@ class Entry {
     this[NEWER] = undefined
     this[OLDER] = undefined
   }
+
+  next () {
+    return this[OLDER]
+  }
+
+  prev () {
+    return this[NEWER]
+  }
 }
 
 /**
@@ -27,18 +39,34 @@ class Entry {
 class Map {
 
   constructor () {
-    this.length = 0
-    this.head = undefined
-    this.items = {}
+    this[LENGTH] = 0
+    this[HEAD] = undefined
+    this[ITEMS] = {}
+  }
+
+  [MAP_ENTRIES] (fn) {
+    let item = this[HEAD]
+    let result = []
+
+    while (item !== undefined) {
+      result.push(fn(item, this))
+      item = item.next()
+    }
+
+    return result
+  }
+
+  get length () {
+    return this[LENGTH]
   }
 
   get (key) {
-    let item = this.items[key]
+    let item = this[ITEMS][key]
     return item ? item.value : undefined
   }
 
   set (key, val) {
-    let item = this.items[key]
+    let item = this[ITEMS][key]
 
     // Exists
     if (item) {
@@ -47,22 +75,22 @@ class Map {
     // New Entry
     } else {
       item = new Entry(key, val)
-      item[OLDER] = this.head
+      item[OLDER] = this[HEAD]
 
-      if (this.head) {
-        this.head[NEWER] = item
+      if (this[HEAD]) {
+        this[HEAD][NEWER] = item
       }
 
-      this.head = item
-      this.items[key] = item
-      this.length++
+      this[HEAD] = item
+      this[ITEMS][key] = item
+      this[LENGTH]++
     }
 
-    return true
+    return this
   }
 
   refresh (key) {
-    let item = this.items[key]
+    let item = this[ITEMS][key]
 
     if (item) {
       let older = item[OLDER]
@@ -76,8 +104,8 @@ class Map {
         newer[OLDER] = older
       }
 
-      item[OLDER] = this.head
-      this.head = item
+      item[OLDER] = this[HEAD]
+      this[HEAD] = item
 
     // Not found
     } else {
@@ -88,11 +116,15 @@ class Map {
   }
 
   delete (key) {
-    let item = this.items[key]
+    let item = this[ITEMS][key]
 
     if (item) {
       let older = item[OLDER]
       let newer = item[NEWER]
+
+      if (item === this[HEAD]) {
+        this[HEAD] = older
+      }
 
       if (older) {
         older[NEWER] = newer
@@ -102,8 +134,8 @@ class Map {
         newer[OLDER] = older
       }
 
-      delete this.items[key]
-      this.length--
+      delete this[ITEMS][key]
+      this[LENGTH]--
 
     // Not found
     } else {
@@ -111,6 +143,45 @@ class Map {
     }
 
     return true
+  }
+
+  map (fn) {
+    return this[MAP_ENTRIES](({ key, value }) => fn(value, key, this))
+  }
+
+  forEach (fn) {
+    this.map(fn)
+  }
+
+  reduce (fn, initialState) {
+    let item = this[HEAD]
+    let state
+
+    if (!initialState) {
+      // TODO
+      throw new Error('reduce requires initial state')
+    } else {
+      state = initialState
+    }
+
+    while (item !== undefined) {
+      state = fn(state, item.value, item.key, this)
+      item = item.next()
+    }
+
+    return state
+  }
+
+  entries () {
+    return this[MAP_ENTRIES](item => item.valueOf())
+  }
+
+  values () {
+    return this[MAP_ENTRIES](({ key, value }) => value)
+  }
+
+  keys () {
+    return this[MAP_ENTRIES](({ key, value }) => key)
   }
 }
 
